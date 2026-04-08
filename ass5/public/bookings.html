@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings - Wanderlust Travels</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <div class="container">
+    <div class="logo">✈️ Wanderlust Travels</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="packages.html">Packages</a></li>
+      <li><a href="bookings.html">My Bookings</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container page-container">
+  <h1>My Bookings</h1>
+  
+  <div id="bookingsContainer">
+    <p class="loading">Loading bookings...</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2026 Wanderlust Travels. All rights reserved.</p>
+</footer>
+
+<script>
+  async function loadBookings() {
+    try {
+      const response = await fetch('/api/bookings');
+      const bookings = await response.json();
+      const container = document.getElementById('bookingsContainer');
+      
+      if (bookings.length === 0) {
+        container.innerHTML = '<p>No bookings yet. <a href="packages.html">Book a package now!</a></p>';
+        return;
+      }
+
+      let html = '<table class="bookings-table">';
+      html += '<tr><th>Booking ID</th><th>Package</th><th>Customer Name</th><th>Email</th><th>Phone</th><th>Travelers</th><th>Total Price</th><th>Booking Date</th></tr>';
+      
+      bookings.forEach(booking => {
+        const date = new Date(booking.bookingDate).toLocaleDateString();
+        html += `
+          <tr>
+            <td>#${booking.id}</td>
+            <td>${booking.packageName}</td>
+            <td>${booking.customerName}</td>
+            <td>${booking.email}</td>
+            <td>${booking.phone}</td>
+            <td>${booking.travelers}</td>
+            <td>$${booking.totalPrice}</td>
+            <td>${date}</td>
+          </tr>
+        `;
+      });
+      
+      html += '</table>';
+      container.innerHTML = html;
+    } catch (error) {
+      console.error('Error loading bookings:', error);
+      document.getElementById('bookingsContainer').innerHTML = '<p>Error loading bookings</p>';
+    }
+  }
+
+  loadBookings();
+</script>
+
+</body>
+</html>

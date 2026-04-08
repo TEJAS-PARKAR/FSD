@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Weather Dashboard</h1>
+      <label>
+        City:
+        <select id="city-select">
+          <option value="newYork">New York</option>
+          <option value="london">London</option>
+          <option value="tokyo">Tokyo</option>
+          <option value="sydney">Sydney</option>
+        </select>
+      </label>
+    </header>
+
+    <main>
+      <div class="stats">
+        <div class="stat">
+          <span>Temp</span>
+          <strong id="avg-temp">--°C</strong>
+        </div>
+        <div class="stat">
+          <span>Humidity</span>
+          <strong id="avg-humidity">--%</strong>
+        </div>
+        <div class="stat">
+          <span>Wind</span>
+          <strong id="avg-wind">-- km/h</strong>
+        </div>
+      </div>
+
+      <div class="chart-area">
+        <canvas id="temperatureChart"></canvas>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

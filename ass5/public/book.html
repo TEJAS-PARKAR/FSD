@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Package - Wanderlust Travels</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <div class="container">
+    <div class="logo">✈️ Wanderlust Travels</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="packages.html">Packages</a></li>
+      <li><a href="bookings.html">My Bookings</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Booking Form -->
+<div class="container page-container">
+  <h1>Book Your Dream Vacation</h1>
+  
+  <div class="booking-section">
+    <!-- Package Details -->
+    <div class="package-details">
+      <h2 id="packageName">Package Details</h2>
+      <img id="packageImage" src="" alt="Package" style="width: 100%; max-width: 400px; border-radius: 8px;">
+      <div id="packageInfo" style="margin-top: 20px;">
+        <!-- Package info loaded by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="booking-form">
+      <h2>Booking Information</h2>
+      <form id="bookingForm">
+        <div class="form-group">
+          <label for="customerName">Full Name</label>
+          <input type="text" id="customerName" name="customerName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" required>
+        </div>
+
+        <div class="form-group">
+          <label for="travelers">Number of Travelers</label>
+          <input type="number" id="travelers" name="travelers" min="1" value="1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="totalPrice">Total Price</label>
+          <input type="text" id="totalPrice" name="totalPrice" readonly style="background-color: #f0f0f0;">
+        </div>
+
+        <button type="submit" class="btn" style="width: 100%;">Confirm Booking</button>
+      </form>
+
+      <div id="successMessage" class="success-message" style="display: none; margin-top: 20px;">
+        ✓ Booking confirmed! Check your bookings page.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2026 Wanderlust Travels. All rights reserved.</p>
+</footer>
+
+<script>
+  let packageData = null;
+
+  // Get package ID from URL
+  const params = new URLSearchParams(window.location.search);
+  const packageId = params.get('id');
+
+  // Load package details
+  async function loadPackageDetails() {
+    try {
+      const response = await fetch(`/api/packages/${packageId}`);
+      if (!response.ok) throw new Error('Package not found');
+      
+      packageData = await response.json();
+      
+      document.getElementById('packageName').textContent = packageData.name;
+      document.getElementById('packageImage').src = packageData.image;
+      
+      const info = document.getElementById('packageInfo');
+      info.innerHTML = `
+        <p><strong>Destination:</strong> ${packageData.destination}</p>
+        <p><strong>Duration:</strong> ${packageData.duration}</p>
+        <p><strong>Price per Person:</strong> $${packageData.price}</p>
+        <p>${packageData.description}</p>
+      `;
+
+      // Set initial total price
+      updateTotalPrice();
+    } catch (error) {
+      console.error('Error loading package:', error);
+      alert('Package not found');
+      window.location.href = 'packages.html';
+    }
+  }
+
+  // Update total price based on travelers
+  function updateTotalPrice() {
+    const travelers = parseInt(document.getElementById('travelers').value) || 1;
+    const total = travelers * packageData.price;
+    document.getElementById('totalPrice').value = `$${total.toFixed(2)}`;
+  }
+
+  // Handle form submission
+  document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const booking = {
+      packageId: packageData.id,
+      packageName: packageData.name,
+      customerName: document.getElementById('customerName').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      travelers: parseInt(document.getElementById('travelers').value),
+      totalPrice: parseInt(document.getElementById('travelers').value) * packageData.price
+    };
+
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(booking)
+      });
+
+      if (response.ok) {
+        document.getElementById('bookingForm').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+        setTimeout(() => {
+          window.location.href = 'bookings.html';
+        }, 2000);
+      } else {
+        alert('Booking failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    }
+  });
+
+  // Update total price when travelers change
+  document.getElementById('travelers').addEventListener('change', updateTotalPrice);
+
+  loadPackageDetails();
+</script>
+
+</body>
+</html>

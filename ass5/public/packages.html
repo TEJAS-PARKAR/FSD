@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Packages - Wanderlust Travels</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <div class="container">
+    <div class="logo">✈️ Wanderlust Travels</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="packages.html">Packages</a></li>
+      <li><a href="bookings.html">My Bookings</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container page-container">
+  <h1>Our Travel Packages</h1>
+  
+  <div class="add-package-btn">
+    <a href="admin.html" class="btn-secondary">+ Add Package (Admin)</a>
+  </div>
+
+  <div class="packages-grid" id="packagesGrid">
+    <!-- Packages loaded by JavaScript -->
+    <p class="loading">Loading packages...</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2026 Wanderlust Travels. All rights reserved.</p>
+</footer>
+
+<script>
+  async function loadAllPackages() {
+    try {
+      const response = await fetch('/api/packages');
+      const packages = await response.json();
+      const grid = document.getElementById('packagesGrid');
+      grid.innerHTML = '';
+      
+      if (packages.length === 0) {
+        grid.innerHTML = '<p>No packages available</p>';
+        return;
+      }
+
+      packages.forEach(pkg => {
+        const card = document.createElement('div');
+        card.className = 'package-card';
+        card.innerHTML = `
+          <img src="${pkg.image}" alt="${pkg.name}">
+          <div class="card-content">
+            <h3>${pkg.name}</h3>
+            <p class="destination">${pkg.destination}</p>
+            <p class="duration">⏱️ ${pkg.duration}</p>
+            <p class="description">${pkg.description}</p>
+            <div class="card-footer">
+              <p class="price">$${pkg.price} per person</p>
+              <a href="book.html?id=${pkg.id}" class="btn-small">Book Now</a>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    } catch (error) {
+      console.error('Error loading packages:', error);
+      document.getElementById('packagesGrid').innerHTML = '<p>Error loading packages</p>';
+    }
+  }
+
+  loadAllPackages();
+</script>
+
+</body>
+</html>
