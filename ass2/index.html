@@ -27,6 +27,10 @@
     <section id="about">
         <h2>About Me</h2>
         <p>Computer Engineering student with strong problem-solving skills and a solid grasp of data structures with the aim of applying logical thinking and coding expertise in real-world applications, with an interest in Japanese language and technology-driven environments.</p>
+        <div class="profile-highlight">
+            <p class="status-label">Quick facts</p>
+            <p id="profile-message">Loading a few highlights...</p>
+        </div>
     </section>
 
     <section id="skills">
@@ -147,10 +151,24 @@
     <section id="contact">
         <h2>Contact</h2>
         <p>LinkedIn: <a href="https://www.linkedin.com/in/tejasparkar/" target="_blank">https://www.linkedin.com/in/tejasparkar/</a></p>
+        <form id="contact-form" class="contact-form">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="Tell me about your idea or opportunity" required></textarea>
+
+            <button type="submit">Send Message</button>
+            <p id="form-status" class="form-status" aria-live="polite"></p>
+        </form>
     </section>
 
     <footer>
         <p>&copy; 2026 Tejas Parkar. All rights reserved.</p>
     </footer>
+    <script src="script.js"></script>
 </body>
 </html>
