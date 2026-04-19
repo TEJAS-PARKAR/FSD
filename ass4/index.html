@@ -10,9 +10,14 @@
 <body>
   <div class="container">
     <header class="header">
-      <h1>Weather Dashboard</h1>
-      <label>
-        City:
+      <div>
+        <p class="eyebrow">Weekly Overview</p>
+        <h1>Weather Dashboard</h1>
+        <p class="subtitle">Track weekly temperature, humidity, and wind patterns for major cities.</p>
+      </div>
+
+      <label class="selector">
+        <span>City</span>
         <select id="city-select">
           <option value="newYork">New York</option>
           <option value="london">London</option>
@@ -26,7 +31,7 @@
       <div class="stats">
         <div class="stat">
           <span>Temp</span>
-          <strong id="avg-temp">--°C</strong>
+          <strong id="avg-temp">--&deg;C</strong>
         </div>
         <div class="stat">
           <span>Humidity</span>
@@ -38,8 +43,26 @@
         </div>
       </div>
 
-      <div class="chart-area">
-        <canvas id="temperatureChart"></canvas>
+      <div class="chart-grid">
+        <section class="chart-card">
+          <div class="chart-copy">
+            <h2>Temperature Trend</h2>
+            <p>Daily temperature changes across the week.</p>
+          </div>
+          <div class="chart-area">
+            <canvas id="temperatureChart"></canvas>
+          </div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-copy">
+            <h2>Humidity and Wind</h2>
+            <p>Compare moisture levels with average wind speed.</p>
+          </div>
+          <div class="chart-area">
+            <canvas id="climateChart"></canvas>
+          </div>
+        </section>
       </div>
     </main>
   </div>

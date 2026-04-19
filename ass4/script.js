@@ -2,7 +2,10 @@ const citySelect = document.getElementById('city-select');
 const avgTempEl = document.getElementById('avg-temp');
 const avgHumidityEl = document.getElementById('avg-humidity');
 const avgWindEl = document.getElementById('avg-wind');
-const ctx = document.getElementById('temperatureChart').getContext('2d');
+
+const temperatureCtx = document.getElementById('temperatureChart').getContext('2d');
+const climateCtx = document.getElementById('climateChart').getContext('2d');
+const DEG = '\u00B0';
 
 const weatherData = {
   newYork: {
@@ -31,54 +34,151 @@ const weatherData = {
   }
 };
 
-const temperatureChart = new Chart(ctx, {
+Chart.defaults.font.family = '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
+Chart.defaults.color = '#5b6b87';
+
+const sharedGrid = {
+  color: 'rgba(148, 163, 184, 0.18)',
+  drawBorder: false
+};
+
+const temperatureChart = new Chart(temperatureCtx, {
   type: 'line',
   data: {
     labels: [],
     datasets: [{
-      label: 'Temperature (°C)',
-      borderColor: '#1f77b4',
-      backgroundColor: 'rgba(31, 119, 180, 0.12)',
+      label: `Temperature (${DEG}C)`,
+      borderColor: '#2563eb',
+      backgroundColor: 'rgba(37, 99, 235, 0.16)',
       fill: true,
-      tension: 0.3,
-      pointRadius: 3,
-      borderWidth: 2,
+      tension: 0.35,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#ffffff',
+      pointBorderColor: '#2563eb',
+      pointBorderWidth: 2,
+      borderWidth: 3,
       data: []
     }]
   },
   options: {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
+        backgroundColor: '#0f172a',
+        padding: 12,
         callbacks: {
-          label: (context) => `${context.parsed.y}°C`
+          label: (context) => `${context.parsed.y}${DEG}C`
         }
       }
     },
     scales: {
-      x: { grid: { display: false } },
+      x: {
+        grid: { display: false }
+      },
       y: {
         beginAtZero: false,
-        ticks: { callback: value => `${value}°` }
+        grid: sharedGrid,
+        ticks: {
+          callback: (value) => `${value}${DEG}`
+        }
       }
     }
   }
 });
 
+const climateChart = new Chart(climateCtx, {
+  data: {
+    labels: [],
+    datasets: [
+      {
+        type: 'bar',
+        label: 'Humidity (%)',
+        data: [],
+        backgroundColor: 'rgba(37, 99, 235, 0.72)',
+        borderRadius: 10,
+        borderSkipped: false,
+        yAxisID: 'humidityAxis'
+      },
+      {
+        type: 'line',
+        label: 'Wind (km/h)',
+        data: [],
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.18)',
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#10b981',
+        pointBorderWidth: 2,
+        borderWidth: 3,
+        fill: false,
+        yAxisID: 'windAxis'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          boxWidth: 10
+        }
+      },
+      tooltip: {
+        backgroundColor: '#0f172a',
+        padding: 12
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false }
+      },
+      humidityAxis: {
+        type: 'linear',
+        position: 'left',
+        grid: sharedGrid,
+        ticks: {
+          callback: (value) => `${value}%`
+        }
+      },
+      windAxis: {
+        type: 'linear',
+        position: 'right',
+        grid: { display: false },
+        ticks: {
+          callback: (value) => `${value} km/h`
+        }
+      }
+    }
+  }
+});
+
+function average(values) {
+  return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
+}
+
 function updateDashboard(cityKey) {
   const city = weatherData[cityKey];
-  const avgTemp = Math.round(city.values.reduce((sum, value) => sum + value, 0) / city.values.length);
-  const avgHumidity = Math.round(city.humidity.reduce((sum, value) => sum + value, 0) / city.humidity.length);
-  const avgWind = Math.round(city.wind.reduce((sum, value) => sum + value, 0) / city.wind.length);
 
-  avgTempEl.textContent = `${avgTemp}°C`;
-  avgHumidityEl.textContent = `${avgHumidity}%`;
-  avgWindEl.textContent = `${avgWind} km/h`;
+  avgTempEl.textContent = `${average(city.values)}${DEG}C`;
+  avgHumidityEl.textContent = `${average(city.humidity)}%`;
+  avgWindEl.textContent = `${average(city.wind)} km/h`;
 
   temperatureChart.data.labels = city.labels;
   temperatureChart.data.datasets[0].data = city.values;
   temperatureChart.update();
+
+  climateChart.data.labels = city.labels;
+  climateChart.data.datasets[0].data = city.humidity;
+  climateChart.data.datasets[1].data = city.wind;
+  climateChart.update();
 }
 
 citySelect.addEventListener('change', () => updateDashboard(citySelect.value));
